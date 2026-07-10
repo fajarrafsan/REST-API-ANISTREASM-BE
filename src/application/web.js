@@ -16,8 +16,16 @@ const web = express();
 
 web.use(cookieParser());
 
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,https://anistreasm-fe-nine.vercel.app").split(",");
+
 web.use(cors({
-    origin: process.env.CORS_ORIGIN || "http://localhost:5173",
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 }));
