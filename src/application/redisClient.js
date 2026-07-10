@@ -1,16 +1,27 @@
 import Redis from "ioredis";
 import { logger } from "./logging.js";
 
-const redisClient = new Redis({
-    port: Number(process.env.REDIS_PORT) || 6379,
-    host: process.env.REDIS_HOST || 'localhost',
-    db: Number(process.env.REDIS_DB) || 0,
-    retryStrategy: (times) => {
-        const delay = Math.min(times * 500, 5000);
-        return delay;
-    },
-    connectTimeout: 10000
-});
+const redisUrl = process.env.REDIS_URL;
+
+const redisClient = redisUrl
+    ? new Redis(redisUrl, {
+        tls: { rejectUnauthorized: false },
+        retryStrategy: (times) => {
+            const delay = Math.min(times * 500, 5000);
+            return delay;
+        },
+        connectTimeout: 10000
+    })
+    : new Redis({
+        port: Number(process.env.REDIS_PORT) || 6379,
+        host: process.env.REDIS_HOST || "localhost",
+        db: Number(process.env.REDIS_DB) || 0,
+        retryStrategy: (times) => {
+            const delay = Math.min(times * 500, 5000);
+            return delay;
+        },
+        connectTimeout: 10000
+    });
 
 let wasConnected = false;
 
