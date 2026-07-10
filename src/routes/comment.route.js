@@ -6,7 +6,7 @@ import {
     editComment,
     deleteComment,
     likeComment
-} from "../controllers/commentController.js";
+} from "../controllers/comment.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const commentRoute = express.Router();

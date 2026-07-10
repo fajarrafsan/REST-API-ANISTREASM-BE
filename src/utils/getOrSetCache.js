@@ -6,6 +6,11 @@ const pendingFetches = new Map();
 
 export async function getOrSetCache(key, ttlInSeconds, fetchIn) {
     try {
+        if (redisClient.status !== "ready") {
+            console.log(`[CACHE] Redis not ready, skipping cache for "${key}"`);
+            return await fetchIn();
+        }
+
         const cached = await redisClient.get(key);
 
         if (cached) {
@@ -28,20 +33,6 @@ export async function getOrSetCache(key, ttlInSeconds, fetchIn) {
                 console.log(`[CACHE] Attempting SETEX "${key}" | payload length: ${payload.length}`);
                 const setResult = await redisClient.setex(key, ttlInSeconds, payload);
                 console.log(`[CACHE] SETEX "${key}" result: ${setResult}`);
-
-                // TEMPORARY DEBUG — remove after diagnosing
-                console.log(`[CACHE DEBUG] connection status: ${redisClient.status}`);
-                console.log(`[CACHE DEBUG] connector options:`, {
-                    host: redisClient.options.host,
-                    port: redisClient.options.port,
-                    db: redisClient.options.db
-                });
-                const dbsizeResult = await redisClient.dbsize();
-                console.log(`[CACHE DEBUG] DBSIZE right after SETEX: ${dbsizeResult}`);
-                const keysResult = await redisClient.keys('*');
-                console.log(`[CACHE DEBUG] KEYS * right after SETEX:`, keysResult);
-                // END TEMPORARY DEBUG
-
                 return data;
             } finally {
                 pendingFetches.delete(key);
@@ -54,6 +45,6 @@ export async function getOrSetCache(key, ttlInSeconds, fetchIn) {
     } catch (error) {
         console.log(`[CACHE] ERROR for "${key}": ${error.message}`);
         logger.error(`Cache operation failed for key "${key}":`, error);
-        throw error;
+        return await fetchIn();
     }
 }

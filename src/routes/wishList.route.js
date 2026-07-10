@@ -5,7 +5,7 @@ import {
     getWishlist,
     getWishlistIds,
     removeWishlist
-} from "../controllers/wishListController.js";
+} from "../controllers/wishList.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const wishlistRoute = express.Router();

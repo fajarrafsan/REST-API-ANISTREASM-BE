@@ -1,6 +1,6 @@
 // src/routes/searchHistoryRoute.js
 import express from "express";
-import { saveHistory, getHistory, deleteHistory } from "../controllers/searchHistoryController.js";
+import { saveHistory, getHistory, deleteHistory } from "../controllers/searchHistory.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const searchHistoryRoute = express.Router();

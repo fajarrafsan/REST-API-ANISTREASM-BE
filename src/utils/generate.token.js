@@ -13,45 +13,49 @@ function parseExpiresIn(value) {
 }
 
 async function generateToken(user) {
-    try {
-        const token = jwt.sign(
-            { id: user.id, username: user.username, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES }
-        );
+    const token = jwt.sign(
+        { id: user.id, username: user.username, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES }
+    );
 
-        await redisClient.set(
-            `session:${user.id}:access`,
-            token,
-            "EX",
-            parseExpiresIn(process.env.JWT_EXPIRES)
-        );
-        return token;
+    try {
+        if (redisClient.status === "ready") {
+            await redisClient.set(
+                `session:${user.id}:access`,
+                token,
+                "EX",
+                parseExpiresIn(process.env.JWT_EXPIRES)
+            );
+        }
     } catch (error) {
-        logger.error("Generate access token error:", error);
-        throw error;
+        logger.error("Generate access token redis error:", error);
     }
+
+    return token;
 }
 
 async function generateRefreshToken(user) {
-    try {
-        const refreshToken = jwt.sign(
-            { id: user.id, username: user.username, email: user.email },
-            process.env.JWT_REFRESH_SECRET,
-            { expiresIn: process.env.JWT_EXPIRES_REFRESH }
-        );
+    const refreshToken = jwt.sign(
+        { id: user.id, username: user.username, email: user.email },
+        process.env.JWT_REFRESH_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_REFRESH }
+    );
 
-        await redisClient.set(
-            `session:${user.id}:refresh`,
-            refreshToken,
-            "EX",
-            parseExpiresIn(process.env.JWT_EXPIRES_REFRESH)
-        );
-        return refreshToken;
+    try {
+        if (redisClient.status === "ready") {
+            await redisClient.set(
+                `session:${user.id}:refresh`,
+                refreshToken,
+                "EX",
+                parseExpiresIn(process.env.JWT_EXPIRES_REFRESH)
+            );
+        }
     } catch (error) {
-        logger.error("Generate refresh token error:", error);
-        throw error;
+        logger.error("Generate refresh token redis error:", error);
     }
+
+    return refreshToken;
 }
 
 export { generateToken, generateRefreshToken };

@@ -185,15 +185,17 @@ async function refresh(refresh) {
 
         const decoded = jwt.verify(refresh, process.env.JWT_REFRESH_SECRET);
 
-        const session = await redisClient.get(
-            `session:${decoded.id}:refresh`
-        );
+        if (redisClient.status === "ready") {
+            const session = await redisClient.get(
+                `session:${decoded.id}:refresh`
+            );
 
-        if (!session) {
-            throw new ResponseError(401, "Refresh token expired or revoked");
-        }
-        if (session !== refresh) {
-            throw new ResponseError(401, "Invalid refresh token");
+            if (!session) {
+                throw new ResponseError(401, "Refresh token expired or revoked");
+            }
+            if (session !== refresh) {
+                throw new ResponseError(401, "Invalid refresh token");
+            }
         }
 
         const user = await prismaClient.user.findUnique({
@@ -218,8 +220,14 @@ async function refresh(refresh) {
 }
 
 async function logout(userId) {
-    await redisClient.del(`session:${userId}:refresh`);
-    await redisClient.del(`session:${userId}:access`);
+    try {
+        if (redisClient.status === "ready") {
+            await redisClient.del(`session:${userId}:refresh`);
+            await redisClient.del(`session:${userId}:access`);
+        }
+    } catch (error) {
+        logger.error("Logout redis error:", error);
+    }
 }
 
 async function getProfile(userId) {

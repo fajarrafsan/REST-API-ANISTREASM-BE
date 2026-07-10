@@ -2,17 +2,17 @@ import { getAnimeComplete } from "../services/animes/complete.anime.service.js";
 import { getAnimeDetailBySlug } from "../services/animes/detail.anime.service.js";
 import { getHeroAnimeHome } from "../services/animes/hero.anime.service.js";
 import { getHomeAnime } from "../services/animes/home.anime.service.js";
-import { searchAnime } from "../services/animes/search.anime.js";
+import { searchAnime } from "../services/animes/search.anime.service.js";
 import { getEpisodeDetail, getServerUrl } from "../services/animes/server.anime.service.js";
 import { getGenreList } from "../services/animes/genre.anime.service.js";
 import { getPopularAnimeList } from "../services/animes/popular.anime.service.js";
-import { getListComplete } from "../services/animes/list.complete.anime.js";
+import { getListComplete } from "../services/animes/list.complete.anime.service.js";
 import { getOngoingAnimeList } from "../services/animes/ongoing.anime.service.js";
 import { getRecentAnimeList } from "../services/animes/recent.anime.service.js";
 import { getAnimeMovies } from "../services/animes/movies.anime.service.js";
 import { getAllAnime } from "../services/animes/all.anime.service.js";
 import { getAnimeByGenre } from "../services/animes/genreList.anime.service.js";
-import { getSchedule } from "../services/animes/schedule.anime.js";
+import { getSchedule } from "../services/animes/schedule.anime.service.js";
 
 async function homeAnime(req, res, next) {
     try {

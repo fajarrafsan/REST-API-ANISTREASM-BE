@@ -34,7 +34,6 @@ async function userLogin(req, res, next) {
 
 async function refreshToken(req, res, next) {
     try {
-        console.info(req.cookies.refreshToken);
         const result = await authService.refresh(req.cookies.refreshToken);
 
         setAccessTokenCookie(res, result.accessToken);
@@ -50,7 +49,6 @@ async function refreshToken(req, res, next) {
 
 async function userLogout(req, res, next) {
     try {
-        console.info("MASUK LOGOUT");
         const userId = req.user.id;
         await authService.logout(userId);
         clearTokenCookies(res);

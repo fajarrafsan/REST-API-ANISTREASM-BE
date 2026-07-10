@@ -3,7 +3,7 @@ import {
     saveWatchHistory,
     getWatchHistory,
     deleteWatchHistory
-} from "../controllers/watchHistoryController.js";
+} from "../controllers/watchHistory.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 const watchHistoryRoute = express.Router();

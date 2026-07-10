@@ -8,7 +8,8 @@ const redisClient = new Redis({
     retryStrategy: (times) => {
         const delay = Math.min(times * 500, 5000);
         return delay;
-    }
+    },
+    connectTimeout: 10000
 });
 
 let wasConnected = false;
@@ -27,8 +28,11 @@ redisClient.on("close", () => {
     }
 });
 
-redisClient.on("error", () => {
-    if (!wasConnected) return;
+redisClient.on("error", (err) => {
+    if (!wasConnected) {
+        logger.error(`Redis connection error: ${err.message}`);
+        return;
+    }
     wasConnected = false;
     logger.error("Redis disconnected");
 });

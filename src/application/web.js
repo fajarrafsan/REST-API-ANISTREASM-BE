@@ -5,7 +5,7 @@ import path from "path"; // 1. Tambahkan import path
 import { errorMiddleware } from "../middlewares/error.middleware.js";
 import { authApi } from "../routes/auth.route.js";
 import { animeRoute } from "../routes/anime.route.js";
-import { protectedApi } from "../routes/protected.api.js";
+import { protectedApi } from "../routes/protected.api.route.js";
 import searchHistoryRoute from "../routes/SearchHistory.route.js";
 import wishlistRoute from "../routes/wishList.route.js";
 import watchHistoryRoute from "../routes/watchHistory.route.js";
