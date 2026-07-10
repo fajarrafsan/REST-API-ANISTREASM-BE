@@ -1,5 +1,6 @@
 const isSecure = process.env.COOKIE_SECURE === 'true';
-const sameSite = process.env.COOKIE_SAMESITE || 'lax';
+const sameSite = process.env.COOKIE_SAMESITE || 'none';
+
 
 export const cookieConfig = {
     accessToken: {
