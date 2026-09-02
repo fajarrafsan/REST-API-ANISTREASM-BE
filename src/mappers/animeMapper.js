@@ -1,17 +1,37 @@
 
-export function mapHomeAnime(samehadakuAnime, anilistMatch) {
+// AniList adalah sumber terbaik, tapi bukan satu-satunya. `fallback` adalah
+// entri anime yang sama dari daftar ongoing Samehadaku, dipakai ketika AniList
+// tidak tersedia. Tanpa itu, matinya AniList mengosongkan hampir setiap field
+// dan mengganti poster cover dengan tangkapan layar episode.
+export function mapHomeAnime(samehadakuAnime, anilistMatch, fallback = null) {
     const media = anilistMatch?.media;
+
+    const episodeNumber =
+        anilistMatch?.episode ?? samehadakuAnime.episodes ?? null;
+
+    // Samehadaku mengirim skor sebagai string ("7.39") pada skala 0-10,
+    // sedangkan AniList memakai bilangan bulat 0-100. Samakan ke skala AniList
+    // supaya frontend tidak perlu tahu asal datanya.
+    const fallbackScore = fallback?.score
+        ? Math.round(parseFloat(fallback.score) * 10)
+        : undefined;
 
     return {
         ...samehadakuAnime,
-        episode: `Ep ${anilistMatch?.episode || "?"}`,
-        status: media?.status === "RELEASING" ? "ONGOING" : "?",
-        poster: media?.coverImage?.large || samehadakuAnime.poster,
+        episode: episodeNumber ? `Ep ${episodeNumber}` : "Ep ?",
+        status:
+            media?.status === "RELEASING" ? "ONGOING"
+            : fallback?.status?.toUpperCase() === "ONGOING" ? "ONGOING"
+            : fallback?.status ?? "?",
+        // Poster episode dipakai paling akhir: itu tangkapan layar, bukan cover.
+        poster: media?.coverImage?.large || fallback?.poster || samehadakuAnime.poster,
         duration: media?.duration || "24",
         studios: media?.studios?.nodes[0]?.name || null,
-        score: media?.averageScore,
+        score: media?.averageScore ?? fallbackScore,
         season: media?.season,
-        genreList: media?.genres?.slice(0, 2),
+        genreList:
+            media?.genres?.slice(0, 2)
+            ?? fallback?.genreList?.slice(0, 2).map((g) => g.title),
         synopsis: media?.description || "",
         year: media?.seasonYear
     };

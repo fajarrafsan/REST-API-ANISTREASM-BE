@@ -27,6 +27,23 @@ export async function getHeroAnimeHome() {
                     return [];
                 });
 
+
+            // AniList kosong berarti layanannya gagal. Ambil daftar ongoing
+            // Samehadaku sebagai sumber pengganti untuk poster, skor, status
+            // dan genre — provider yang sama, jadi tidak menambah dependensi.
+            let fallbackById = new Map();
+            if (airingData.length === 0) {
+                const ongoing = await samehadakuRepository
+                    .getOngoingAnimeList(1, "popular")
+                    .catch((error) => {
+                        logger.warn("[Fallback] Daftar ongoing gagal diambil:", describeError(error));
+                        return { animeList: [] };
+                    });
+                fallbackById = new Map(
+                    (ongoing.animeList ?? []).map((item) => [item.animeId, item])
+                );
+                logger.info(`[Fallback] ${fallbackById.size} anime ongoing tersedia sebagai pengganti AniList.`);
+            }
             const matched = [];
             const unmatched = [];
 
@@ -43,7 +60,7 @@ export async function getHeroAnimeHome() {
                     unmatched.push(anime.title);
                 }
 
-                return mapHomeAnime(anime, match);
+                return mapHomeAnime(anime, match, fallbackById.get(anime.animeId) ?? null);
             });
 
             logger.info(`[getHeroAnimeHome] ✅ Matched: ${matched.length}/${animeList.length}`);
