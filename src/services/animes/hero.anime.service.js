@@ -4,6 +4,7 @@ import { samehadakuRepository } from "../../repositories/samehadakuRepository.js
 import { anilistRepository } from "../../repositories/anilistRepository.js";
 import { findBestMatch } from "../../utils/matcher.js";
 import { mapHomeAnime } from "../../mappers/animeMapper.js";
+import { describeError } from "../../utils/describeError.js";
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -82,7 +83,7 @@ export async function getHeroAnimeHome() {
 
             return heroAnime;
         } catch (error) {
-            logger.error("ERROR GET HERO ANIME SERVICE", error);
+            logger.error("ERROR GET HERO ANIME SERVICE", describeError(error));
             throw error;
         }
     });

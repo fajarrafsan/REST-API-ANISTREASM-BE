@@ -1,6 +1,7 @@
 import { logger } from "../../application/logging.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
 import { samehadakuRepository } from "../../repositories/samehadakuRepository.js";
+import { describeError } from "../../utils/describeError.js";
 
 export async function getAllAnime() {
     // Menyimpan cache selama 24 jam (86400 detik) karena daftar indeks A-Z jarang berubah
@@ -21,7 +22,7 @@ export async function getAllAnime() {
             return mappedList;
 
         } catch (error) {
-            logger.error("ERROR GET ALL ANIME LIST SERVICE", error);
+            logger.error("ERROR GET ALL ANIME LIST SERVICE", describeError(error));
             throw error;
         }
     });

@@ -4,6 +4,7 @@ import { anilistRepository } from "../../repositories/anilistRepository.js";
 import { samehadakuRepository } from "../../repositories/samehadakuRepository.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
 import { findBestMatch } from "../../utils/matcher.js";
+import { describeError } from "../../utils/describeError.js";
 
 export async function getHomeAnime() {
     return getOrSetCache("anime-home", 3600, async () => {
@@ -43,7 +44,7 @@ export async function getHomeAnime() {
 
             return animeDetail;
         } catch (error) {
-            logger.error("ERROR GET HOME ANIME SERVICE", error);
+            logger.error("ERROR GET HOME ANIME SERVICE", describeError(error));
             throw error;
         }
     });

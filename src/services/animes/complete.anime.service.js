@@ -3,6 +3,7 @@ import { anilistRepository } from "../../repositories/anilistRepository.js";
 import { mapCompleteAnime } from "../../mappers/animeMapper.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
 import { samehadakuRepository } from "../../repositories/samehadakuRepository.js";
+import { describeError } from "../../utils/describeError.js";
 
 export async function getAnimeComplete() {
     return getOrSetCache("complete-anime-home", 3600, async () => {
@@ -35,7 +36,7 @@ export async function getAnimeComplete() {
             return animeDetail;
 
         } catch (error) {
-            logger.error("ERROR GET ANIME COMPLETE SERVICE", error);
+            logger.error("ERROR GET ANIME COMPLETE SERVICE", describeError(error));
             throw error;
         }
     });

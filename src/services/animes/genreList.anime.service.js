@@ -1,6 +1,7 @@
 import { logger } from "../../application/logging.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
 import { samehadakuRepository } from "../../repositories/samehadakuRepository.js";
+import { describeError } from "../../utils/describeError.js";
 
 export async function getAnimeByGenre(genreId, page = 1) {
     // Cache key dinamis berdasarkan genreId dan nomor halaman
@@ -34,7 +35,7 @@ export async function getAnimeByGenre(genreId, page = 1) {
             };
 
         } catch (error) {
-            logger.error(`ERROR GET ANIME BY GENRE SERVICE FOR ${genreId}`, error);
+            logger.error(`ERROR GET ANIME BY GENRE SERVICE FOR ${genreId}`, describeError(error));
             throw error;
         }
     });

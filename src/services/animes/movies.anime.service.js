@@ -1,6 +1,7 @@
 import { logger } from "../../application/logging.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
 import { samehadakuRepository } from "../../repositories/samehadakuRepository.js";
+import { describeError } from "../../utils/describeError.js";
 
 export async function getAnimeMovies(page = 1) {
     const cacheKey = `movies-anime-page-${page}`;
@@ -34,7 +35,7 @@ export async function getAnimeMovies(page = 1) {
             };
 
         } catch (error) {
-            logger.error("ERROR GET ANIME MOVIES SERVICE", error);
+            logger.error("ERROR GET ANIME MOVIES SERVICE", describeError(error));
             throw error;
         }
     });

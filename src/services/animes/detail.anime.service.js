@@ -4,6 +4,7 @@ import { anilistRepository } from "../../repositories/anilistRepository.js";
 import { samehadakuRepository } from "../../repositories/samehadakuRepository.js";
 import { getOrSetCache } from "../../utils/getOrSetCache.js";
 import { withTimeout } from "../../utils/withTimeout.js";
+import { describeError } from "../../utils/describeError.js";
 
 export async function getAnimeDetailBySlug(slug) {
     return getOrSetCache(
@@ -70,7 +71,7 @@ export async function getAnimeDetailBySlug(slug) {
                 return mapAnimeDetail(anime, anilistData);
 
             } catch (error) {
-                logger.error(`[getAnimeDetailBySlug] Error ${slug}`, error);
+                logger.error(`[getAnimeDetailBySlug] Error ${slug}`, describeError(error));
                 throw error;
             }
         }

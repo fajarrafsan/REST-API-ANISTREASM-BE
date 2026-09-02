@@ -10,6 +10,20 @@ const pendingFetches = new Map();
 const STALE_TTL_SECONDS = 60 * 60 * 24 * 3;
 const staleKeyOf = (key) => `${key}:stale`;
 
+// Upstream membalas 403 "Plana AI Detector" dan mem-ban IP selama 30 menit
+// ketika lalu lintas dianggap mencurigakan. Terus menembaki upstream selama
+// ban hanya memperpanjangnya, jadi sekali terdeteksi kita berhenti mencoba
+// dan menyajikan cadangan sampai jendela ban lewat.
+const BAN_KEY = "upstream:banned";
+const BAN_COOLDOWN_SECONDS = 60 * 31;
+
+function isUpstreamBan(error) {
+    if (error?.response?.status !== 403) return false;
+    const body = error.response.data;
+    const text = typeof body === "string" ? body : JSON.stringify(body ?? "");
+    return /plana|detector|ban/i.test(text);
+}
+
 export async function getOrSetCache(key, ttlInSeconds, fetchIn) {
     // Redis mati: tidak ada cache dan tidak ada cadangan, jadi upstream saja.
     if (redisClient.status !== "ready") {
@@ -29,6 +43,17 @@ export async function getOrSetCache(key, ttlInSeconds, fetchIn) {
     }
 
     console.log(`[CACHE] MISS "${key}"`);
+
+    // Selama cooldown ban, jangan sentuh upstream sama sekali.
+    const banned = await redisClient.get(BAN_KEY).catch(() => null);
+    if (banned) {
+        const stale = await redisClient.get(staleKeyOf(key)).catch(() => null);
+        if (stale) {
+            console.log(`[CACHE] Upstream sedang di-ban — menyajikan cadangan "${key}"`);
+            return JSON.parse(stale);
+        }
+        throw new Error("Upstream sedang memblokir permintaan dan tidak ada data cadangan.");
+    }
 
     if (pendingFetches.has(key)) {
         console.log(`[CACHE] "${key}" already in-flight, reusing pending fetch`);
@@ -53,6 +78,13 @@ export async function getOrSetCache(key, ttlInSeconds, fetchIn) {
         } catch (error) {
             // Upstream gagal (403, timeout, dsb). Sajikan salinan terakhir yang
             // diketahui baik daripada memaksa UI menampilkan halaman kosong.
+            if (isUpstreamBan(error)) {
+                await redisClient
+                    .setex(BAN_KEY, BAN_COOLDOWN_SECONDS, new Date().toISOString())
+                    .catch(() => null);
+                logger.warn("[CACHE] Upstream memblokir IP kita — menghentikan permintaan keluar sementara.");
+            }
+
             const stale = await redisClient.get(staleKeyOf(key)).catch(() => null);
 
             if (stale) {
