@@ -19,4 +19,17 @@ const updateProfileValidation = Joi.object({
 
 const getUserValidation = Joi.number().required().positive();
 
-export { registerValidation, loginValidation, getUserValidation, updateProfileValidation };
+const emailValidation = Joi.object({
+    email: Joi.string().email().max(100).required()
+});
+
+const resetPasswordRequestValidation = Joi.object({
+    email: Joi.string().email().max(100).required()
+});
+
+const resetPasswordConfirmValidation = Joi.object({
+    token: Joi.string().min(16).max(255).required(),
+    password: Joi.string().min(6).max(100).required()
+});
+
+export { registerValidation, loginValidation, getUserValidation, updateProfileValidation, emailValidation, resetPasswordRequestValidation, resetPasswordConfirmValidation };

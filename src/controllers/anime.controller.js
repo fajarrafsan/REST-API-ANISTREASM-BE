@@ -13,6 +13,7 @@ import { getAnimeMovies } from "../services/animes/movies.anime.service.js";
 import { getAllAnime } from "../services/animes/all.anime.service.js";
 import { getAnimeByGenre } from "../services/animes/genreList.anime.service.js";
 import { getSchedule } from "../services/animes/schedule.anime.service.js";
+import { getBatchList, getBatchDetail } from "../services/animes/batch.anime.service.js";
 
 async function homeAnime(req, res, next) {
     try {
@@ -228,4 +229,33 @@ export async function scheduleHandler(req, res, next) {
         next(error);
     }
 }
-export default { homeAnime, homeHeroAnime, homeAnimeComplete, search, getAnimeDetail, episodeDetailHandler, serverUrlHandler, getGenreListHandler, popularAnimeHandler, ListCompleteHandler, ongoingAnimeHandler, recentAnimeHandler, moviesAnimeHandler, allAnimeHandler, animeByGenreHandler, scheduleHandler };
+
+export async function batchListHandler(req, res, next) {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const result = await getBatchList(page);
+        res.json({ success: true, ...result });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function batchDetailHandler(req, res, next) {
+    try {
+        const { batchId } = req.params;
+
+        if (!batchId?.trim()) {
+            return res.status(400).json({
+                success: false,
+                errors: "Batch ID is required"
+            });
+        }
+
+        const result = await getBatchDetail(batchId);
+        res.json({ success: true, data: result });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export default { homeAnime, homeHeroAnime, homeAnimeComplete, search, getAnimeDetail, episodeDetailHandler, serverUrlHandler, getGenreListHandler, popularAnimeHandler, ListCompleteHandler, ongoingAnimeHandler, recentAnimeHandler, moviesAnimeHandler, allAnimeHandler, animeByGenreHandler, scheduleHandler, batchListHandler, batchDetailHandler };

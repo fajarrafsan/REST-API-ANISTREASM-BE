@@ -120,5 +120,22 @@ export const samehadakuRepository = {
     async getSchedule() {
         const response = await animeApi.get('/anime/samehadaku/schedule');
         return response.data.data.days;
+    },
+
+    async getBatchList(page = 1) {
+        const response = await animeApi.get('/anime/samehadaku/batch', {
+            params: { page }
+        });
+        return {
+            batchList: response.data.data.batchList,
+            pagination: response.data.pagination
+        };
+    },
+
+    async getBatchDetail(batchId) {
+        const response = await animeApi.get(
+            `/anime/samehadaku/batch/${encodeURIComponent(batchId)}`
+        );
+        return response.data.data;
     }
 };

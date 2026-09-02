@@ -30,11 +30,13 @@ model User {
   updatedAt DateTime @updatedAt
   profil    Profil?
 
-  searchHistories SearchHistory[]
-  wishlists       Wishlist[]
-  watchHistories  WatchHistory[]
-  comments        Comment[]
-  commentLikes    CommentLike[]
+  searchHistories   SearchHistory[]
+  wishlists         Wishlist[]
+  watchHistories    WatchHistory[]
+  comments          Comment[]
+  commentLikes      CommentLike[]
+  animeRatings      AnimeRating[]
+  resetPasswordTokens ResetPasswordToken[]
 
   @@map("users")
 }
@@ -94,6 +96,11 @@ model WatchHistory {
   userId       Int
   watchedAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+  // =====================
+  // CONTINUE WATCHING
+  // =====================
+  progressSeconds Int  @default(0) // posisi terakhir ditonton (detik)
+  durationSeconds Int? // total durasi episode (detik)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -101,6 +108,41 @@ model WatchHistory {
   @@index([userId])
   @@index([watchedAt])
   @@map("watch_histories")
+}
+
+// =====================
+// RATING ANIME (1-10)
+// =====================
+model AnimeRating {
+  id        Int      @id @default(autoincrement())
+  animeId   String   @db.VarChar(255) // slug anime
+  score     Int // 1-10
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, animeId])
+  @@index([animeId])
+  @@map("anime_ratings")
+}
+
+// =====================
+// RESET PASSWORD TOKEN
+// =====================
+model ResetPasswordToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique @db.VarChar(255)
+  userId    Int
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("reset_password_tokens")
 }
 
 model Comment {

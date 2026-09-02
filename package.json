@@ -4,12 +4,12 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-"scripts": {
-  "dev": "node src/app.js",
-  "start": "node src/app.js",
-  "test": "jest -i",
-  "postinstall": "prisma generate"
-},
+  "scripts": {
+    "dev": "node src/app.js",
+    "start": "node src/app.js",
+    "test": "jest -i",
+    "postinstall": "prisma generate"
+  },
   "prisma": {
     "schema": "prisma/schema.prisma"
   },
@@ -53,6 +53,7 @@
     "joi": "^18.2.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
+    "nodemailer": "^9.1.1",
     "p-limit": "^3.1.0",
     "rate-limit-redis": "^5.0.0",
     "winston": "^3.19.0"

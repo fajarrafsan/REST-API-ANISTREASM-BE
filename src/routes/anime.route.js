@@ -18,5 +18,7 @@ animeRoute.get('/api/anime/episode/:episodeId', animeController.episodeDetailHan
 animeRoute.get('/api/anime/server/:serverId', animeController.serverUrlHandler); 
 animeRoute.get('/api/anime/genres/:genreId', animeController.animeByGenreHandler);    
 animeRoute.get('/api/anime/detail/:slug', animeController.getAnimeDetail);
+animeRoute.get('/api/anime/batch', animeController.batchListHandler);
+animeRoute.get('/api/anime/batch/:batchId', animeController.batchDetailHandler);
 
 export { animeRoute };
