@@ -15,7 +15,16 @@ export async function getHomeAnime() {
             const limitedAnimeList = animeList.slice(0, 15);
 
             // Ambil 100 data untuk meningkatkan chance match
-            const airingData = await anilistRepository.getAiringSchedules(1, 100);
+            const airingData = await anilistRepository
+                .getAiringSchedules(1, 100)
+                .catch((error) => {
+                    // AniList hanya memperkaya hasil. Kalau layanannya mati,
+                    // sajikan data Samehadaku tanpa pengayaan daripada
+                    // menjatuhkan seluruh endpoint. Harus [], bukan null:
+                    // findBestMatch mengiterasi nilai ini.
+                    logger.warn("[AniList] tidak tersedia, lanjut tanpa pengayaan:", describeError(error));
+                    return [];
+                });
 
             const matched = [];
             const unmatched = [];

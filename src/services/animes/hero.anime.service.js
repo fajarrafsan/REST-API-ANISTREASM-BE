@@ -16,7 +16,16 @@ export async function getHeroAnimeHome() {
             const animeList = await samehadakuRepository.getHeroAnimeList(3);
 
             // 2. Ambil airing data dari Anilist untuk matching
-            const airingData = await anilistRepository.getAiringSchedules(1, 100);
+            const airingData = await anilistRepository
+                .getAiringSchedules(1, 100)
+                .catch((error) => {
+                    // AniList hanya memperkaya hasil. Kalau layanannya mati,
+                    // sajikan data Samehadaku tanpa pengayaan daripada
+                    // menjatuhkan seluruh endpoint. Harus [], bukan null:
+                    // findBestMatch mengiterasi nilai ini.
+                    logger.warn("[AniList] tidak tersedia, lanjut tanpa pengayaan:", describeError(error));
+                    return [];
+                });
 
             const matched = [];
             const unmatched = [];
