@@ -11,19 +11,27 @@ import wishlistRoute from "../routes/wishList.route.js";
 import watchHistoryRoute from "../routes/watchHistory.route.js";
 import recentActivityRoute from "../routes/recentActivity.route.js";
 import commentRoute from "../routes/comment.route.js";
+import ratingRoute from "../routes/rating.route.js";
 
 const web = express();
 
 web.use(cookieParser());
 
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,https://anistreasm-fe-nine.vercel.app").split(",");
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,https://anistreasm-fe-nine.vercel.app")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+// Vercel menerbitkan URL berbeda untuk tiap branch dan tiap deployment.
+const vercelProjectOrigin = /^https:\/\/(anistreasm|anistream)-fe-[a-z0-9-]+\.vercel\.app$/i;
 
 web.use(cors({
     origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin)) {
+        if (!origin || allowedOrigins.includes(origin) || vercelProjectOrigin.test(origin)) {
             callback(null, true);
         } else {
-            callback(new Error("Not allowed by CORS"));
+            // Bukan Error, supaya tidak berubah jadi 500 lewat errorMiddleware.
+            callback(null, false);
         }
     },
     credentials: true,
@@ -44,6 +52,7 @@ web.use(wishlistRoute);
 web.use(watchHistoryRoute);
 web.use(recentActivityRoute);
 web.use(commentRoute);
+web.use(ratingRoute);
 web.use(animeRoute);
 web.use(searchHistoryRoute);
 web.use(authApi);
