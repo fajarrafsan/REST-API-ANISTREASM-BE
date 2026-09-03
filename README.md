@@ -236,9 +236,10 @@ ANILIST_TIMEOUT=3000
 AXIOS_TIMEOUT=15000
 
 # ── CORS & Cookie ──────────────────────────────────
-CORS_ORIGIN=http://localhost:5173,https://fe-anda.vercel.app
+CORS_ORIGIN=http://localhost:5173,https://anistreasm-fe-nine.vercel.app,https://anistream.fajarrafsan.my.id
 COOKIE_SECURE=true
 COOKIE_SAMESITE=none
+FRONTEND_URL=https://anistream.fajarrafsan.my.id
 
 # ── Cloudinary ─────────────────────────────────────
 CLOUDINARY_CLOUD_NAME=xxxx
@@ -256,6 +257,10 @@ MAX_FILE_SIZE=2097152                       # 2MB
 ```
 
 </details>
+
+Saat mengganti domain frontend, perbarui `CORS_ORIGIN` pada **Environment** layanan backend Render, lalu simpan dan deploy ulang. Nilai environment ini menggantikan daftar origin bawaan di kode; perubahan `.env` lokal tidak memperbarui environment Render. Gunakan origin lengkap (`https://anistream.fajarrafsan.my.id`) tanpa path atau trailing slash. Karena frontend memakai cookie (`withCredentials: true`), jangan gunakan `*` sebagai origin. Sesuaikan juga `FRONTEND_URL` agar tautan reset password mengarah ke domain baru.
+
+Jalankan `pnpm test:cors` untuk memeriksa header CORS dan preflight tanpa database atau Redis.
 
 ---
 

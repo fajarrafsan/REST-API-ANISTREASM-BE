@@ -12,31 +12,13 @@ import watchHistoryRoute from "../routes/watchHistory.route.js";
 import recentActivityRoute from "../routes/recentActivity.route.js";
 import commentRoute from "../routes/comment.route.js";
 import ratingRoute from "../routes/rating.route.js";
+import { createCorsOptions } from "../config/corsConfig.js";
 
 const web = express();
 
 web.use(cookieParser());
 
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173,https://anistreasm-fe-nine.vercel.app")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-
-// Vercel menerbitkan URL berbeda untuk tiap branch dan tiap deployment.
-const vercelProjectOrigin = /^https:\/\/(anistreasm|anistream)-fe-[a-z0-9-]+\.vercel\.app$/i;
-
-web.use(cors({
-    origin: (origin, callback) => {
-        if (!origin || allowedOrigins.includes(origin) || vercelProjectOrigin.test(origin)) {
-            callback(null, true);
-        } else {
-            // Bukan Error, supaya tidak berubah jadi 500 lewat errorMiddleware.
-            callback(null, false);
-        }
-    },
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-}));
+web.use(cors(createCorsOptions()));
 
 web.use((req, res, next) => {
     res.setHeader("Cross-Origin-Opener-Policy", "same-origin-allow-popups");

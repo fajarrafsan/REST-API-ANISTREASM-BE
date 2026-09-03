@@ -8,6 +8,7 @@
     "dev": "node src/app.js",
     "start": "node src/app.js",
     "test": "jest -i",
+    "test:cors": "node --test test/cors.node.js",
     "postinstall": "prisma generate"
   },
   "prisma": {

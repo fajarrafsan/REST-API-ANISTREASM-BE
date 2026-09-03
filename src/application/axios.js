@@ -12,7 +12,7 @@ const BROWSER_HEADERS = {
         "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
     "Accept": "application/json, text/plain, */*",
     "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-    "Referer": process.env.ANIME_API_URL ?? "https://www.sankavollerei.web.id",
+    "Referer": process.env.ANIME_API_URL ?? "https://www.sankavollerei.web.id"
 };
 
 const animeApi = axios.create({
@@ -20,7 +20,7 @@ const animeApi = axios.create({
     timeout: AXIOS_TIMEOUT,
     headers: {
         "Content-Type": "application/json",
-        ...BROWSER_HEADERS,
+        ...BROWSER_HEADERS
     }
 });
 
